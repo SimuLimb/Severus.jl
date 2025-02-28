@@ -30,4 +30,4 @@ New functionality to add:
 Your help would be greatly appreciated! If you can contribute please do so by posting a pull-request. I am very much open to fully acknowledging your contributions e.g. by listing you as a contributor properly whereever possible, by welcoming you on board as a long term contributor, or by inviting you to be a co-author on publications featuring Severus functionality. 
 
 # License 
-Comodo.jl is released open source under the [Apache 2.0 license](https://github.com/SimuLimb/Severus.jl/blob/main/LICENSE).
+Severus.jl is released open source under the [Apache 2.0 license](https://github.com/SimuLimb/Severus.jl/blob/main/LICENSE).
