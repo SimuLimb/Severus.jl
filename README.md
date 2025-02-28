@@ -20,6 +20,11 @@ To get started install the package, study the documentation, and test some of th
 # Roadmap
 New functionality to add:
 - [ ] Finalise basic demo
+- [ ] Distill functionality in reusable functions
+- [ ] Create demo featuring parameterised shape changes e.g. 10 different shapes/scales etc. 
+- [ ] Make repository and REAME feature complete
+- [ ] Add testing/CI
+- [ ] Add documentation
 
 # How to contribute? 
 Your help would be greatly appreciated! If you can contribute please do so by posting a pull-request. I am very much open to fully acknowledging your contributions e.g. by listing you as a contributor properly whereever possible, by welcoming you on board as a long term contributor, or by inviting you to be a co-author on publications featuring Severus functionality. 
