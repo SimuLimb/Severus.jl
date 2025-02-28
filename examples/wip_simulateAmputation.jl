@@ -2,10 +2,10 @@ using Severus
 using Severus.Comodo
 using Severus.Comodo.GLMakie
 using Severus.Comodo.GeometryBasics
-using Severus.Geogram
 
 using Severus.Comodo.Statistics
 using Severus.Comodo.LinearAlgebra
+using Geogram
 using FileIO
 
 # 

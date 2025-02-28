@@ -10,6 +10,6 @@ export Comodo
 export Geogram
 
 # Export functions
-export severusdir
+export severusdir, addOne
 
 end # module Severus
