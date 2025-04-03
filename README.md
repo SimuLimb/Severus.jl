@@ -14,6 +14,17 @@ julia> ]
 To get started install the package, study the documentation, and test some of the demos provided in the [`examples`](https://github.com/SimuLimb/Severus.jl/tree/main/examples) folder. 
 
 # Documentation 
+## BodyParts3D file names explained
+| `FMAID`      | `English name` |
+| ----------- | ----------- |
+| 7163   | Skin      |
+| 16586   | Right hip bone      |
+| 24474      | Right femur       |
+| 24477      | Right tibia      |
+| 24480   | Right fibula       |
+| 24480   | Right fibula       |
+| 24480   | Right fibula       |
+| 24480   | Right fibula       |
 
 # Testing 
 
