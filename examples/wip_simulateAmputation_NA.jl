@@ -8,6 +8,7 @@ using Severus.Comodo.LinearAlgebra
 using Severus.Geogram
 using FileIO
 
+GLMakie.closeall()
 # 
 # Z_cut_offset_top = 200.0
 # Z_cut_level_skin = 160.0
@@ -209,7 +210,70 @@ for i in 1:1:length(fileName_set)
     hp1 = poly!(ax1,GeometryBasics.Mesh(VV[i],FF[i]), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
 end
 hp2 = poly!(ax1,GeometryBasics.Mesh(Vt,Ft), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
-fig
+display(GLMakie.Screen(),fig)
+
+#Tetgen 
+#tetgen only for bones 
+
+stringOpt = "paAqY"
+
+function volume_region_length(F,V)
+    vol_re = mean(V)
+    D = edgelengths(F,V)
+    vol = mean(D)^3 / (6.0*sqrt(2.0))
+    return vol,vol_re
+end 
+
+bone_set = [indFemur,indPatella,indTibia,indFibula]
+region_vol = []
+V_regions = []
+
+for index in bone_set 
+    Fn = FF[index]
+    Vn = VV[index]
+    vol,vol_re = volume_region_length(Fn,Vn)
+    push!(region_vol,vol)
+    push!(V_regions,vol_re)
+end
+
+region_skin = mean(VV[indSkin]) .-30
+D = edgelengths(FF[indSkin],VV[indSkin])
+vol_skin = mean(D)^3 / (6.0*sqrt(2.0))
+push!(V_regions,region_skin)
+push!(region_vol,vol_skin)
+region_top = mean(Vt) .-30 
+D = edgelengths(Ft,Vt)
+vol_top = mean(D)^3 / (6.0*sqrt(2.0))
+push!(V_regions,region_top)
+push!(region_vol,vol_top)
 
 
-# save("/home/kevin/Desktop/leg.stl",GeometryBasics.Mesh(V_skin,F_skin))
+Fw,Vw,Cw= joingeom(FF[indFemur],VV[indFemur],FF[indPatella],VV[indPatella],FF[indTibia],VV[indTibia],FF[indFibula],VV[indFibula],FF[indSkin],VV[indSkin],Ft,Vt)
+Fw,Vw = mergevertices(Fw,Vw)
+E,V,CE,Fb,Cb= tetgenmesh(Fw,Vw; facetmarkerlist=Cw, V_regions=V_regions,region_vol=region_vol, stringOpt)
+
+
+#Visualization
+cmap = cgrad(:Spectral, 5, categorical = true)
+
+F = element2faces(E) # Triangular faces
+CE_F = repeat(CE,inner=4) #why is it repeating
+
+Fbs,Vbs = separate_vertices(Fb,V)
+Cbs_V = simplex2vertexdata(Fbs,Cb)
+
+Fs,Vs = separate_vertices(F,V)
+CE_Vs = simplex2vertexdata(Fs,CE_F)
+M = GeometryBasics.Mesh(Vs,Fs)
+
+strokewidth = 1 
+
+indNodesTop = unique(reduce(vcat,Fb[Cb.==6]))
+indNodesBones = unique(reduce(vcat,Fb[[in(c,[1,2,3,4]) for c in Cb]]))
+fig3 = Figure(size=(800,800))
+
+ax1 = Axis3(fig3[1, 1][1, 1], aspect = :data, xlabel = "X", ylabel = "Y", zlabel = "Z", title = "Boundary surfaces")
+hp1 = mesh!(ax1,GeometryBasics.Mesh(Vbs,Fbs), color=Cbs_V, shading = FastShading, transparency=true, overdraw=false,colorrange = (1,6),colormap=cmap)
+
+display(GLMakie.Screen(),fig3)
+
