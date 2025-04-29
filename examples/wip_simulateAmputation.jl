@@ -5,7 +5,7 @@ using Severus.Comodo.GeometryBasics
 
 using Severus.Comodo.Statistics
 using Severus.Comodo.LinearAlgebra
-using Geogram
+using Severus.Geogram
 using FileIO
 
 # 
