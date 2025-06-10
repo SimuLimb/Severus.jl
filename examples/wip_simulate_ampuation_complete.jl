@@ -113,13 +113,16 @@ V_skin = VV[indSkin]
 F_skin = FF[indSkin]
 #actual cut of the limb can be user generated 
 Z_taper_start = v_mid_patella[3]
-Z_taper_end = v_mid_patella[3]-137.0 
+Z_taper_end = v_mid_patella[3]-127.0 
 #normalizing in the z direction returning the D and the correspoinding indices 
 D,ind = mapfunction_D(V_skin,Z_taper_start,Z_taper_end)
 D_map = D[ind]
 #control points 
-T_bez_in = [0.0, 1.0/3.0, 2.0/3.0, 1.0]
-T_bez_map_in = [0.0, 0.0, 2.0/3.0, 1.0]
+T_bez_in = [0.0, 0.25, 0.25, 1.0]
+T_bez_map_in = [0.0, 0.0, 0.25, 1.0]
+#less than linear
+#  T_bez_in = [0.0, 0.1, 0.1, 1.0]
+#  T_bez_map_in = [0.0, 0.0, 0.75, 1.0]
 #correspoinding spline 
 T_bez, T_map_bez = bezierMap(T_bez_in,T_bez_map_in; n=200)
 #mapping it to the skin 
@@ -156,7 +159,7 @@ boundary_set_s1,_ = getboundaryset(Fs,Vs)
 numPointBezier = 250
 Z_thickness_distal = 30
 p_distal = Point{3,Float64}(v_mid_low_tibia[1],v_mid_low_tibia[2],v_mid_low_tibia[3]-Z_thickness_distal)
-Fs2,Vs2 = bezierclose(Fs,Vs,100,100,boundary_set_s1[2]; numPointBezier = numPointBezier,p_distal=p_distal, numEdgeSmoothSteps = 25, λ = 0.5, pointSpacing=pointSpacing)
+Fs2,Vs2 = bezierclose(Fs,Vs,150,75,boundary_set_s1[2]; numPointBezier = numPointBezier,p_distal=p_distal, numEdgeSmoothSteps = 25, λ = 0.5, pointSpacing=pointSpacing)
 V_bez = Vs2
 F_bez = Fs2
 
@@ -168,7 +171,7 @@ ax1 = Axis3(fig[1, 1], clip =false, viewmode = :free, aspect = :data, xlabel = "
 for i in 2:1:length(fileName_set)
     hp1 = poly!(ax1,GeometryBasics.Mesh(VV[i],FF[i]), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
 end
-hp3 = poly!(ax1,GeometryBasics.Mesh(Vs,Fs), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
+#  hp4 = poly!(ax1,GeometryBasics.Mesh(Vs,Fs), color=:white, shading = FastShading, transparency=true)
 hp3 = poly!(ax1,GeometryBasics.Mesh(V_bez,F_bez), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
 
 # hp3 = poly!(ax1,GeometryBasics.Mesh(V_shrunk,F_shrunk), color=:blue, shading = FastShading, transparency=true)
