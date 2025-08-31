@@ -87,6 +87,16 @@ region_vol=region_vol[1]
 #the whole geometry is meshed
 Fw,Vw,Cw= joingeom(FF[indSkin],VV[indSkin],FF[indFemur],VV[indFemur],FF[indPatella],VV[indPatella],FF[indTibia],VV[indTibia],FF[indFibula],VV[indFibula],Ft,Vt,Ft_b,Vt_b)
 Fw,Vw = mergevertices(Fw,Vw)
+fig1 = Figure(size=(800,800))
+color = [:white, 3 ,5, 7, 9]
+ax1 = LScene(fig1[1,1],show_axis =false)
+for i in 1:1:length(fileName_set)
+    hp1 = poly!(ax1,GeometryBasics.Mesh(VV[i],FF[i]), color= color[i], colormap = :viridis, colorrange = (1, 9), shading = FastShading, transparency=true)
+end
+
+# hp3 = poly!(ax1,GeometryBasics.Mesh(V_shrunk,F_shrunk), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
+display(GLMakie.Screen(),fig1)
+
 # # # #tetgen
    
 E,V,CE,Fb,Cb= tetgenmesh(Fw,Vw; facetmarkerlist=Cw, V_regions=[V_regions], region_vol=[region_vol], V_holes = V_holes,  stringOpt)
@@ -99,12 +109,12 @@ exe_path ="C:/Program Files/FEBioStudio/bin/febio4"
 #######
 UT,VT,FF,VV,F_shrunk,V_shrunk,U_mag,U_vec = shrinky(exe_path,FF,VV,E,V,CE,Fb,Cb,κ,ratio,J_desired)
 # Visualization
-fig = Figure(size=(800,800))
+fig2 = Figure(size=(800,800))
 
-ax1 = LScene(fig[1,1])
+ax1 = LScene(fig2[1,1])
 # hp3 = poly!(ax1,GeometryBasics.Mesh(VT[end],Fb[Cb.==1]), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
 hp3 = poly!(ax1,GeometryBasics.Mesh(V_shrunk,F_shrunk), color=:white, shading = FastShading, transparency=false,strokecolor=:black,strokewidth=1)
-
+display(GLMakie.Screen(),fig2)
 # # normalplot(ax1,Ft,Vt)
 
 
@@ -117,14 +127,30 @@ Z_taper_end = v_mid_patella[3]-127.0
 #normalizing in the z direction returning the D and the correspoinding indices 
 D,ind = mapfunction_D(V_skin,Z_taper_start,Z_taper_end)
 D_map = D[ind]
-#control points 
-T_bez_in = [0.0, 0.25, 0.25, 1.0]
-T_bez_map_in = [0.0, 0.0, 0.25, 1.0]
+#linear
+# T_bez_in = [0.0, 0.5, 1.0]
+# T_bez_map_in = [0.0, 0.5, 1.0]
+T_bez_in1     = [0.0, 0.2, 0.5, 0.7]
+T_bez_map_in1 = [0.0, 0.0, 1.0, 1.0]
+T_bez1, T_map_bez1 = bezierMap(T_bez_in1,T_bez_map_in1; n=100)
+
+T_bez_in2     = [0.7, 0.9, 1.0]
+T_bez_map_in2 = [1.0, 1.0, 0.5]
+T_bez2, T_map_bez2 = bezierMap(T_bez_in2,T_bez_map_in2; n=100)
+
+T_bez = T_bez1
+append!(T_bez,T_bez2[2:end])
+T_map_bez = T_map_bez1
+append!(T_map_bez,T_map_bez2[2:end])
+
+#control points in between
+# T_bez_in = [0.0, 0.25, 0.25, 1.0]
+# T_bez_map_in = [0.0, 0.0, 0.25, 1.0]
 #less than linear
 #  T_bez_in = [0.0, 0.1, 0.1, 1.0]
 #  T_bez_map_in = [0.0, 0.0, 0.75, 1.0]
 #correspoinding spline 
-T_bez, T_map_bez = bezierMap(T_bez_in,T_bez_map_in; n=200)
+# T_bez, T_map_bez = bezierMap(T_bez_in,T_bez_map_in; n=200)
 #mapping it to the skin 
 D_map = map_D(T_bez, T_map_bez, D_map; spline_order=4)
 Fs,Vs = new_shape_residum(V_skin,F_skin,D_map,ind,U_vec,v_mid_patella)
@@ -146,6 +172,9 @@ z_distance = [nothing, nothing]
 # boundary_curve = [indCurve_tibia,indCurve_fibula]
 numPointBezier = 250
 indCurve_tibia,_ = getboundaryset(FF[indTibia],VV[indTibia])
+V_tibia = VV[indTibia]
+F_tibia = VV[indTibia]
+
 v_mid_low_tibia = mean(V_tibia[indCurve_tibia[1]])
 v_mid_low_tibia = mean(V_tibia[indCurve_tibia[1]])
 
